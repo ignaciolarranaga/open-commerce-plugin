@@ -118,27 +118,27 @@ Mostly client-rendered storefronts.
 
 ## Runtime notes
 
-### Claude.ai and Claude Code (`web_fetch`, `WebFetch`)
+### Runtimes whose fetch tool opens only known URLs, or returns a summary
 
-- On Claude.ai, `web_fetch` opens only URLs that the user provided or that already
+- Some chat runtimes open only URLs that the user provided or that already
   appear in the conversation (search results, previously fetched pages). The index
   URLs are literal in this skill, so they can be fetched directly. A **filled search
   template or JSON endpoint is a new URL** and may be refused: when that happens, use
   search-first (`web_search` with `site:<host>`), then fetch the result.
-- Claude Code's `WebFetch` can open arbitrary URLs but returns a model-processed
+- Some agent runtimes can open arbitrary URLs but return a model-processed
   summary of the page; ask it explicitly for "product titles, prices with currency,
   availability text, model codes and product URLs, verbatim" so nothing is paraphrased.
 - Both tools follow redirects; a redirect to a home page usually means the search path
   does not exist or was blocked.
 
-### ChatGPT browsing
+### Runtimes with a browsing tool that renders pages
 
 - Browsing opens the URL and returns the rendered text. JSON endpoints come back as
   raw text and are readable. Client-rendered pages often show navigation only.
 - If a page is blocked (403, challenge) the tool reports an error; do not retry more
   than once, move to search-first.
 
-### Codex and Cursor
+### Terminal agents with a shell instead of a fetch tool
 
 - Shell access is usually available: `curl -sL --max-time 20 '<url>'` works for JSON
   endpoints and server-rendered HTML. Set a descriptive `User-Agent` that identifies an

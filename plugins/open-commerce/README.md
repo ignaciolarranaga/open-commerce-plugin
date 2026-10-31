@@ -8,6 +8,12 @@ Shopping skill for assistants, reading the OpenCommerceIndex directory of online
   taxonomy `taxonomy_version: 1`)
 - Install id: `open-commerce@opencommerceindex`
 
+Install in Claude Code with one command:
+
+```
+/plugin install open-commerce --marketplace ignaciolarranaga/open-commerce-plugin
+```
+
 ## Skills
 
 | skill | purpose |
@@ -18,6 +24,29 @@ Each skill lives in `skills/<name>/SKILL.md` with its supporting material under
 `skills/<name>/references/`. The same folder is loaded by Claude Code, Codex and Cursor
 through the manifests in `.claude-plugin/`, `.codex-plugin/` and `.cursor-plugin/`, and
 is zipped for manual upload (Claude.ai) and for the planned ChatGPT submission.
+
+## What this plugin connects to and what it collects
+
+The plugin is instructions only. It runs no code and has no server. During a conversation
+it asks the assistant to use its own web fetch and web search tools to read:
+
+- the public directory files at `https://ignaciolarranaga.github.io/open-commerce-index/`
+  (operated by this project on GitHub Pages);
+- public pages and public JSON endpoints of the online stores listed in that directory,
+  which this project does not own or control, only as far as each store's profile and
+  `robots.txt` allow;
+- the assistant's web search results limited to a listed store's domain.
+
+It collects nothing. No data about the user or the conversation is sent to this project;
+requests to the directory and to stores are made by the assistant's own tools under the
+assistant provider's policies, and store websites see those requests as they would any
+visit. The plugin stores no state. Prices and availability are shown exactly as retrieved,
+with their source and time; the project has no commercial relationship with any listed
+store and gives no purchase recommendation.
+
+Privacy policy: https://ignaciolarranaga.github.io/open-commerce-index/en/privacy/ ·
+Terms: https://ignaciolarranaga.github.io/open-commerce-index/en/terms/ ·
+Support: https://github.com/ignaciolarranaga/open-commerce-plugin/issues
 
 ## What this plugin never does
 

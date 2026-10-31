@@ -142,10 +142,10 @@ when you need the model code or availability and the results page lacks them.
 
 ### Route C — search-first (web search, then open a result)
 
-Use when A and B fail or are unavailable, when the host's fetch tool refuses URLs it
-has not seen (Claude.ai's `web_fetch` only opens URLs that already appeared in the
-conversation, in a search result or in a fetched page), or when the site is `client`
-rendered or protected. Run a web search for `site:<host> <query>` using the store's
+Use when A and B fail or are unavailable, when the runtime's fetch tool refuses URLs it
+has not seen (some runtimes only open URLs that already appeared in the conversation,
+in a search result or in a fetched page), or when the site is `client` rendered or
+protected. Run a web search for `site:<host> <query>` using the store's
 host from `website`, then open the most relevant result (a product or search page on
 that host). Report the page you opened as the source. This is the **only** URL route
 you may use that is not written in the manifest. When the product has known model

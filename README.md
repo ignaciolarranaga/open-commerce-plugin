@@ -100,6 +100,10 @@ In Claude Code the skill is also available as `/open-commerce:shop <query>`.
   [Add your store](https://github.com/ignaciolarranaga/open-commerce-index/issues/new?template=add-store.yml)
   form.
 
+## Directory listings
+
+Submission checklists for Anthropic's directory and OpenAI's skills-only plugins are in [docs/publishing.md](docs/publishing.md). Neither listing exists yet.
+
 ## Evals
 
 Two complementary sets:
