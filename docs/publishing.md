@@ -59,12 +59,17 @@ Apps Management write access).
    Data & Analytics, Communication, Education & Research, Security, Finance, Healthcare,
    Travel, Entertainment, Other), so the manifest uses `Other`; the validator enforces the
    list.
-5. Known blocker (2026-10-31): the portal answered "We are not accepting more skills-only
-   submissions at this time". That is a directory policy, not a package defect. The two
-   routes OpenAI documents for listing are a remote MCP server over HTTPS (a hosted
-   component this project does not have today) or waiting for skills-only intake to
-   reopen. Until then ChatGPT users install nothing from a directory; the site's ChatGPT
-   page keeps the manual path and the compatibility row stays `planned`.
+5. Known blocker (checked 2026-10-31): the portal answered "We are not accepting more
+   skills-only submissions at this time" on a draft that passed every other check. That is
+   a directory policy, not a package defect. Evidence at that date: the "Skills only"
+   option started disappearing from other developers' portals around 2026-09-26, the same
+   message has been reported publicly since 2026-10-23, OpenAI's docs still describe the
+   path and say only that skills-only plugins "may be subject to additional eligibility
+   requirements", and no reason or reopening date has been published. The draft stays
+   saved in the portal; re-check it before each release. The only documented alternative
+   is a remote MCP server over HTTPS, a hosted component this project does not have, so
+   the ChatGPT page on the site keeps the manual path and the compatibility row stays
+   `planned`.
 6. After approval, record the install path on the site's ChatGPT page and in the
    compatibility matrix.
 
