@@ -221,6 +221,17 @@
         "notes": "Ambiguous currency: 800 USD vs 800 UYU is a 40x difference. Expected: treat as 800 USD (800 pesos cannot buy a notebook) but say so, or ask once. Show U$S offers at or under 800 as shown; $U offers listed with their price, with any conversion explicitly labelled with rate and date."
       },
       "must_not": ["fabricated price", "silent conversion", "treating $ and U$S as the same currency"]
+    },
+    {
+      "id": "q21-supermercado-rivera",
+      "query": "quiero comprar yerba Canarias 1kg en el súper online y que me la traigan a casa en Rivera",
+      "country": "UY",
+      "intent": "region",
+      "expected": {
+        "model_codes": [],
+        "notes": "City given (Rivera → UY-RV): no question about the user's area. Grocery stores with fulfillment.ships_to[].regions that exclude UY-RV are skipped or flagged ('delivers only in …'); stores without regions follow coverage (partial → mention notes and that delivery to Rivera is not confirmed). A country-wide query without regional candidates (e.g. q01) must not trigger a region question."
+      },
+      "must_not": ["fabricated price", "claiming delivery to Rivera from a store whose regions exclude UY-RV", "asking for the department when the city was given"]
     }
   ]
 }

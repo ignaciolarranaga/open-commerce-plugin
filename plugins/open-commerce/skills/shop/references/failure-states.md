@@ -80,5 +80,9 @@ Spanish:
   and stop. Do not fall back to a remembered list of stores.
 - Destination country not in `countries[]`: say the index does not cover it yet and
   offer the add-store form. Do not search unrelated stores.
+- Destination region not in any matching store's `ships_to[].regions`, and no
+  country-wide store matches: say which listed stores sell it and where they deliver,
+  mention pickup when offered, and offer the add-store form. Do not present them as
+  delivering to the user's area.
 - Country file present but `stores` empty for the matched categories: say no listed
   store declares that category and offer the add-store form.
