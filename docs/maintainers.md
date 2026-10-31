@@ -148,3 +148,7 @@ Add a `WebFetch(domain:…)` grant for every store you expect the skill to reach
 `plugins/open-commerce/evals/results/` (gitignored). The manual query set in `evals/queries.json`
 at the repository root is the longer list for hands-on runs in other clients; record those with
 `evals/run-log.template.md`.
+
+## CI gate
+
+`.github/workflows/evals.yml` runs the automated suite on pull requests touching the skill, the evals or the plugin manifest, with `--threshold 0.8`, pinned models (`claude-sonnet-5` under test, `claude-haiku-4-5` as judge) and a USD 20 cost cap. It requires the `ANTHROPIC_API_KEY` repository secret. Make `evals` a required check in the `main` ruleset after its first green run. A run can also be started by hand from the Actions tab with a custom run count or `--ablation none`.
