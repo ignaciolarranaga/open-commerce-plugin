@@ -28,5 +28,5 @@ jobs:
 
       - name: Smoke-test the ChatGPT package build
         run: |
-          node scripts/pack-chatgpt.js
+          node scripts/pack.js
           for f in dist/*.zip; do unzip -l "$f"; done

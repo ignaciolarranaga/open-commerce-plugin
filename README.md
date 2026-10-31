@@ -70,7 +70,7 @@ Uploaded skills do not update themselves: upload the new file when a release com
 
 **ChatGPT**
 
-Planned. The repository builds a skills-only package (`npm run pack:chatgpt`) in the
+Planned. The repository builds a skills-only package (`npm run pack:plugin`) in the
 layout OpenAI's plugin submission expects; nothing has been submitted or approved yet.
 
 **Other agents**
@@ -168,7 +168,7 @@ Once the first run is green, add `evals` to the required status checks of the `m
 │               └── references/        # retrieval patterns, failure states, presentation
 ├── scripts/
 │   ├── validate.js                   # manifests in sync, skills well-formed, no merchant data
-│   └── pack-chatgpt.js               # builds dist/open-commerce-<version>.zip
+│   └── pack.js                       # builds the plugin zip and the skill zip in dist/
 ├── CLAUDE.md                         # conventions for agents working on this repo
 ├── CONTRIBUTING.md
 ├── LICENSE                           # Apache-2.0

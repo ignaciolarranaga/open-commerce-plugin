@@ -65,7 +65,7 @@ manifest keys.
 2. Tag the commit `v<version>` and push the tag, or trigger the **Release** workflow
    (`.github/workflows/release.yml`, `workflow_dispatch`) with `version`, `target` and
    `notes`. The workflow verifies that all manifests at the target report that version,
-   builds `dist/open-commerce-<version>.zip` and `dist/open-commerce-skill-shop.zip` with `scripts/pack-chatgpt.js`, creates the
+   builds `dist/open-commerce-<version>.zip` and `dist/open-commerce-skill-shop.zip` with `scripts/pack.js`, creates the
    tag and the GitHub release, and attaches both archives.
 3. The tag and release name must equal the manifest version with the `v` prefix.
 

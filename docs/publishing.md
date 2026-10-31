@@ -38,7 +38,7 @@ Apps Management write access).
 
 1. Listing fields are read from the archive, not typed in the portal. They live in the
    `interface` block of `plugins/open-commerce/.codex-plugin/plugin.json`, and
-   `scripts/pack-chatgpt.js` copies them into a root `plugin.json`
+   `scripts/pack.js` copies them into a root `plugin.json`
    (`extensions."com.openai".interface`) so either import route finds them. Limits enforced
    by `node scripts/validate.js`: `displayName` and `shortDescription` (the subtitle) at most
    30 characters, `longDescription` at most 4000, `developerName` at most 80, `category`,
@@ -46,7 +46,7 @@ Apps Management write access).
    `termsOfServiceURL`, and `logo` plus `composerIcon` as relative paths under `assets/`
    (square PNG, JPEG, WebP or SVG, 48 to 4096 px, under 5 MiB). The Claude manifest does not
    carry this block: `claude plugin validate --strict` rejects unknown keys.
-2. Build the archive: `npm run pack:chatgpt` → `dist/open-commerce-<version>.zip` with
+2. Build the archive: `npm run pack:plugin` → `dist/open-commerce-<version>.zip` with
    `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, the generated `plugin.json`,
    `assets/` and `skills/shop/`. No hooks, no `userConfig`, no commands or agents: this
    plugin has none.

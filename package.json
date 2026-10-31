@@ -7,6 +7,8 @@
   },
   "scripts": {
     "validate": "node scripts/validate.js",
-    "pack:chatgpt": "node scripts/pack-chatgpt.js"
+    "pack": "node scripts/pack.js",
+    "pack:plugin": "node scripts/pack.js --plugin",
+    "pack:skill": "node scripts/pack.js --skill"
   }
 }

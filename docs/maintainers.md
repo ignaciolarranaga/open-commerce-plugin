@@ -84,7 +84,7 @@ Option A, from a machine with `gh`:
 
 ```bash
 git tag v<version> && git push origin v<version>
-node scripts/pack-chatgpt.js
+node scripts/pack.js
 gh release create v<version> --title "v<version>" --notes "<markdown notes>" dist/open-commerce-<version>.zip dist/open-commerce-skill-shop.zip
 ```
 
@@ -106,7 +106,9 @@ compatibility row changed. Never state or imply vendor approval.
 ## Build the ChatGPT package
 
 ```bash
-npm run pack:chatgpt      # or: node scripts/pack-chatgpt.js
+npm run pack          # both archives; or: node scripts/pack.js
+npm run pack:plugin   # only dist/open-commerce-<version>.zip
+npm run pack:skill    # only dist/open-commerce-skill-shop.zip
 unzip -l dist/open-commerce-<version>.zip
 ```
 

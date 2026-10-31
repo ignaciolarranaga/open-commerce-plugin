@@ -61,7 +61,7 @@ jobs:
 
       - name: Build the plugin and skill archives
         run: |
-          node scripts/pack-chatgpt.js
+          node scripts/pack.js
           test -f "dist/open-commerce-$VERSION.zip"
           test -f "dist/open-commerce-skill-shop.zip"
 
