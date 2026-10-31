@@ -94,7 +94,9 @@ if (manifests.codex) {
       else if (v.length > max) fail(`codex manifest interface.${key} is ${v.length} characters; the limit is ${max}`);
       else if (max === 30 && /\r|\n/.test(v)) fail(`codex manifest interface.${key} must be a single line`);
     }
-    if (typeof iface.category !== 'string' || !iface.category.trim()) fail('codex manifest interface.category is required');
+    // Exact titles accepted by the OpenAI portal (developers.openai.com/plugins/deploy/submission-errors).
+    const CATEGORIES = ['Productivity', 'Creativity', 'Developer Tools', 'Business & Operations', 'Data & Analytics', 'Communication', 'Education & Research', 'Security', 'Finance', 'Healthcare', 'Travel', 'Entertainment', 'Other'];
+    if (!CATEGORIES.includes(iface.category)) fail(`codex manifest interface.category must be one of ${CATEGORIES.join(', ')}; got ${JSON.stringify(iface.category)}`);
     for (const key of ['websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL']) {
       const v = iface[key];
       if (typeof v !== 'string' || !/^https:\/\//.test(v)) fail(`codex manifest interface.${key} must be an https URL`);

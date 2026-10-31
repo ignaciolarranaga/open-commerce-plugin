@@ -54,8 +54,11 @@ Apps Management write access).
    and its references use "the runtime" and "the assistant"); no artifact instructions.
 4. In the portal: **Create plugin → Skills only**, upload the archive, check that the
    listing fields were imported, test the skills in a clean environment, fill the
-   review fields, fix every scan result, submit the draft. If the portal picks a
-   different `category` list, choose the closest to "Shopping".
+   review fields, fix every scan result, submit the draft. The portal's `category` list
+   has no shopping entry (Productivity, Creativity, Developer Tools, Business & Operations,
+   Data & Analytics, Communication, Education & Research, Security, Finance, Healthcare,
+   Travel, Entertainment, Other), so the manifest uses `Other`; the validator enforces the
+   list.
 5. Known blocker (2026-10-31): the portal answered "We are not accepting more skills-only
    submissions at this time". That is a directory policy, not a package defect. The two
    routes OpenAI documents for listing are a remote MCP server over HTTPS (a hosted
