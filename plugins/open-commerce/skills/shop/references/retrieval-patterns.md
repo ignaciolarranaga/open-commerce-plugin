@@ -56,6 +56,8 @@ Server-rendered. Best structured coverage in the index.
   and `llms.txt`. Mention them when relevant; call MCP only if your runtime has a
   native MCP client configured for that URL.
 
+**Currency in Shopify JSON.** `suggest.json` and `products.json` return prices as bare numbers in the shop's currency; the number carries no currency symbol. Take the currency from the manifest's `currencies` when it lists exactly one (and say so once), otherwise read it from the product page or `/meta.json`, which returns `{"currency": "UYU", ...}`, before stating it.
+
 ## VTEX (`platform: vtex`)
 
 Mostly client-rendered storefronts.

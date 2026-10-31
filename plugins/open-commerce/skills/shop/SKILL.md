@@ -208,8 +208,13 @@ offer:
   and the code column says "not retrieved";
 - price **as shown, with the store's currency notation**: Uruguayan pesos as `$` or
   `$U` (write `$U 24.990` or `UYU 24.990`), US dollars as `U$S` (write `U$S 549` or
-  `USD 549`). Never convert between currencies unless the user asks, and then label
-  the rate and date;
+  `USD 549`). When a structured endpoint returns a bare number without a currency,
+  use the store's `currencies` from the manifest **if it lists exactly one**, write the
+  price with that currency and add "(currency from the store profile)" once in the
+  notes; if the manifest lists several currencies and the page could not be read,
+  write "currency not confirmed" instead of guessing. Never convert between
+  currencies unless the user asks, and then label the rate and date. Do not call one
+  offer "the cheapest" when the offers are in different currencies;
 - availability exactly as stated ("En stock", "Sin stock", "Consultar") or
   "not shown";
 - source URL (the page or endpoint you read) and retrieval time.
