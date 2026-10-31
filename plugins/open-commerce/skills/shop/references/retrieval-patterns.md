@@ -56,6 +56,8 @@ Server-rendered. Best structured coverage in the index.
   and `llms.txt`. Mention them when relevant; call MCP only if your runtime has a
   native MCP client configured for that URL.
 
+**Model codes in Shopify `suggest.json`.** Each product result carries a `body` field with the product description as HTML; model codes such as `EP5541/50` usually appear there even when the title omits them. Read `body` (and `variants[].sku` in `products.json`) before reporting a code as not retrieved.
+
 **Currency in Shopify JSON.** `suggest.json` and `products.json` return prices as bare numbers in the shop's currency; the number carries no currency symbol. Take the currency from the manifest's `currencies` when it lists exactly one (and say so once), otherwise read it from the product page or `/meta.json`, which returns `{"currency": "UYU", ...}`, before stating it.
 
 ## VTEX (`platform: vtex`)
