@@ -102,7 +102,25 @@ In Claude Code the skill is also available as `/open-commerce:shop <query>`.
 
 ## Evals
 
-`evals/queries.json` is the manual query set for hands-on runs in any client. `plugins/open-commerce/evals/` is an automated `claude plugin eval` suite; see [docs/maintainers.md](docs/maintainers.md) for how to run it.
+Two complementary sets:
+
+- `plugins/open-commerce/evals/` is an automated [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals) suite with five cases: the primary LatteGo query, an unrelated request that must not trigger the skill, a destination outside coverage, a nonsense product, and an English laptop query. Each case checks that the skill fired, a deterministic signal where possible, and an LLM rubric written as PASS and FAIL conditions.
+- `evals/queries.json` is the manual set of 20 queries for hands-on runs in clients the automated suite cannot drive (Claude.ai, ChatGPT, Codex, Cursor). Record those runs with `evals/run-log.template.md` and update [docs/compatibility.md](docs/compatibility.md).
+
+To run the automated suite you need Claude Code 2.1.269 or later and the network tools the skill uses, granted explicitly because eval runs never prompt for permission:
+
+```sh
+cd plugins/open-commerce
+claude plugin eval . --trust-plugin --no-publish \
+  --allow-tools WebSearch \
+    "WebFetch(domain:ignaciolarranaga.github.io)" \
+    "WebFetch(domain:loi.com.uy)" \
+    "WebFetch(domain:www.zonatecno.com.uy)" \
+    "WebFetch(domain:www.vitaleco.com.uy)" \
+  --max-cost-usd 15
+```
+
+Add a `WebFetch(domain:…)` grant for every store the skill may reach; stores without a grant show up as failed retrievals, which the skill must report honestly. Each case runs three times with the plugin and three times without it, so the report shows what the plugin adds. Useful variations: `--case lattego-uruguay` for one case, `--ablation none` to skip the baseline while iterating, `--judge-model sonnet` if the rubric verdicts look unstable. Results and the HTML report land in `plugins/open-commerce/evals/results/` (gitignored).
 
 ## Repository layout
 
