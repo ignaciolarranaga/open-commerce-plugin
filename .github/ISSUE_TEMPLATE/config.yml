@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Add your store to OpenCommerceIndex
+    url: https://github.com/ignaciolarranaga/open-commerce-index/issues/new?template=add-store.yml
+    about: Missing store or wrong store data goes to the data repository, not here.
+  - name: Browse the store directory
+    url: https://ignaciolarranaga.github.io/open-commerce-index/
+    about: The human-readable site, in Spanish and English.

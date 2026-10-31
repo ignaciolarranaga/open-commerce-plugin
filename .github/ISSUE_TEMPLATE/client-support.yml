@@ -1,0 +1,47 @@
+name: Client support
+description: Ask for support of a client not in the compatibility matrix, or report that a listed client behaves differently.
+title: "[client] "
+labels: ["client-support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The current status per client is in [docs/compatibility.md](https://github.com/ignaciolarranaga/open-commerce-plugin/blob/main/docs/compatibility.md). Rows become `tested` only after a recorded eval run; if you ran one, attach it.
+  - type: input
+    id: client
+    attributes:
+      label: Client and version
+      placeholder: "e.g. Cursor 1.x, Codex CLI 0.x, an Agent SDK app"
+    validations:
+      required: true
+  - type: dropdown
+    id: request
+    attributes:
+      label: Request type
+      options:
+        - Add a client not in the matrix
+        - A listed client's install path does not work
+        - A listed client's limitations differ from what is documented
+        - Contribute an eval run for a client
+    validations:
+      required: true
+  - type: textarea
+    id: install
+    attributes:
+      label: How you installed the plugin (or tried to)
+      description: Commands or UI steps, and their output.
+      render: shell
+  - type: textarea
+    id: tools
+    attributes:
+      label: Tools available to the assistant in that client
+      description: URL fetch, web search, shell, none. Mention URL restrictions you observed (e.g. refuses URLs not previously seen).
+  - type: textarea
+    id: run
+    attributes:
+      label: Eval run (optional)
+      description: Paste the summary table from a filled evals/run-log.template.md, or link to a gist.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else

@@ -1,0 +1,12 @@
+{
+  "name": "open-commerce-plugin",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "pack:chatgpt": "node scripts/pack-chatgpt.js"
+  }
+}

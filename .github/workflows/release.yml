@@ -1,0 +1,77 @@
+name: Release
+
+# Cuts an open-commerce release: verifies that every plugin manifest at the
+# target commit reports exactly the requested version, runs the validator,
+# builds the skills-only zip, then creates the git tag `v<version>` and the
+# GitHub release with the zip attached (see CLAUDE.md and docs/maintainers.md).
+#
+# Exists so releases can be cut from environments without `gh` or tag-push
+# rights.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, without the v prefix (e.g. 0.1.0). Must match all plugin manifests at the target."
+        required: true
+        type: string
+      target:
+        description: "Commit SHA or branch to tag (defaults to main)."
+        required: false
+        default: main
+        type: string
+      notes:
+        description: "Markdown release notes."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      NOTES: ${{ inputs.notes }}
+    steps:
+      - name: Validate the version format
+        run: echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify every plugin manifest reports the requested version
+        run: |
+          for f in plugins/open-commerce/.claude-plugin/plugin.json \
+                   plugins/open-commerce/.codex-plugin/plugin.json \
+                   plugins/open-commerce/.cursor-plugin/plugin.json; do
+            [ -f "$f" ] || { echo "::error::$f is missing"; exit 1; }
+            v=$(node -p "JSON.parse(require('fs').readFileSync('$f','utf8')).version")
+            [ "$v" = "$VERSION" ] || { echo "::error::$f reports $v, expected $VERSION"; exit 1; }
+          done
+
+      - name: Validate the repository
+        run: node scripts/validate.js
+
+      - name: Build the plugin and skill archives
+        run: |
+          node scripts/pack-chatgpt.js
+          test -f "dist/open-commerce-$VERSION.zip"
+          test -f "dist/open-commerce-skill-shop.zip"
+
+      - name: Create the tag and the release with the archives attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$VERSION" \
+            --target "$(git rev-parse HEAD)" \
+            --title "v$VERSION" \
+            --notes "$NOTES" \
+            "dist/open-commerce-$VERSION.zip" \
+            "dist/open-commerce-skill-shop.zip"

@@ -1,0 +1,17 @@
+{
+  "name": "opencommerceindex",
+  "owner": {
+    "name": "Ignacio Larrañaga",
+    "email": "ignaciolarranaga@gmail.com"
+  },
+  "metadata": {
+    "description": "OpenCommerceIndex marketplace: shopping skills that read the open directory of online stores at https://ignaciolarranaga.github.io/open-commerce-index/."
+  },
+  "plugins": [
+    {
+      "name": "open-commerce",
+      "source": "./plugins/open-commerce",
+      "description": "Find, compare and locate products in the online stores listed by OpenCommerceIndex, retrieving current prices and availability from each store's own website."
+    }
+  ]
+}

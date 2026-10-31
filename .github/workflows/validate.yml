@@ -1,0 +1,32 @@
+name: Validate
+
+# Runs the repository validator and a packaging smoke test on every push and
+# pull request. The Claude Code CLI validation (`claude plugin validate`) is not
+# run here because the CLI needs authentication in CI; maintainers run it
+# locally before a release (see docs/maintainers.md).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate manifests, skills, marketplaces and data policy
+        run: node scripts/validate.js
+
+      - name: Smoke-test the ChatGPT package build
+        run: |
+          node scripts/pack-chatgpt.js
+          unzip -l dist/*.zip

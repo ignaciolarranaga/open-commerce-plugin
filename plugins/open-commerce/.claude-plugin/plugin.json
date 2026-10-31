@@ -1,0 +1,20 @@
+{
+  "name": "open-commerce",
+  "version": "0.1.0",
+  "description": "Shopping skill for assistants: reads the OpenCommerceIndex directory of online stores, retrieves current offers from each store's own website following its declared access methods, and reports prices, availability and sources with honest coverage notes.",
+  "author": {
+    "name": "Ignacio Larrañaga",
+    "email": "ignaciolarranaga@gmail.com"
+  },
+  "homepage": "https://ignaciolarranaga.github.io/open-commerce-index/",
+  "repository": "https://github.com/ignaciolarranaga/open-commerce-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "shopping",
+    "ecommerce",
+    "stores",
+    "prices",
+    "uruguay",
+    "open-commerce-index"
+  ]
+}

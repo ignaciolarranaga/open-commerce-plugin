@@ -1,0 +1,226 @@
+{
+  "description": "Reproducible shopping queries for manual evaluation of the shop skill against the live OpenCommerceIndex. Run each in a client, record the result in a copy of run-log.template.md. 'expected' describes what a correct answer contains; 'must_not' lists failures that invalidate the run.",
+  "index_base_url": "https://ignaciolarranaga.github.io/open-commerce-index/",
+  "queries": [
+    {
+      "id": "q01-lattego-exact",
+      "query": "Philips LatteGo 5500",
+      "country": "UY",
+      "intent": "exact_model",
+      "expected": {
+        "model_codes": ["EP5541", "EP5543", "EP5544", "EP5547"],
+        "notes": "Codes may carry a /xx suffix (EP5541/50, EP5543/90, EP5544/50, EP5547/90). Any EP554x variant counts as exact; other Philips series (EP2xxx, EP3xxx, EP4xxx) are approximate at best. Stores listing coffee/small-appliances and Philips in brands rank first. Country is not stated: the assistant may ask once or infer Uruguay only if context makes it clear."
+      },
+      "must_not": ["fabricated price", "a failed store reported as 'does not sell it'", "a non-5500 series presented as exact", "URL not retrieved during the run"]
+    },
+    {
+      "id": "q02-lattego-precio-uruguay",
+      "query": "cafetera Philips LatteGo 5500 precio Uruguay",
+      "country": "UY",
+      "intent": "exact_model",
+      "expected": {
+        "model_codes": ["EP5541", "EP5543", "EP5544", "EP5547"],
+        "notes": "Country is explicit; no clarification question should be asked. Answer in Spanish with $U prices as shown, source URL and retrieval time per offer, and a Cobertura block citing source_revision and generated_at."
+      },
+      "must_not": ["fabricated price", "currency conversion not requested", "asking which country", "missing coverage block"]
+    },
+    {
+      "id": "q03-lenovo-ideapad",
+      "query": "notebook Lenovo IdeaPad 15 pulgadas",
+      "country": "UY",
+      "intent": "ambiguous",
+      "expected": {
+        "model_codes": [],
+        "notes": "Family-level query: many IdeaPad models exist (Slim 3, Slim 5, 1, Gaming). Results should list what each store shows with the exact title and the model identifier if present, marked approximate unless the user narrows it. Computing stores are the candidates; a technology store pricing in U$S must show U$S, not $U."
+      },
+      "must_not": ["fabricated price", "inventing a specific model the store did not show", "mixing currencies without labels"]
+    },
+    {
+      "id": "q04-aire-12000-inverter",
+      "query": "aire acondicionado 12000 BTU inverter",
+      "country": "UY",
+      "intent": "budget_category",
+      "expected": {
+        "model_codes": [],
+        "notes": "Category climate (parent appliances). Candidates: stores with appliances or general. Expect a list of models with capacity as shown (12000 BTU / 3500 frigorías / 1 TR); approximate matches at other capacities must be marked as such."
+      },
+      "must_not": ["fabricated price", "reporting a 9000 or 18000 BTU unit as exact", "a failed store reported as 'does not sell it'"]
+    },
+    {
+      "id": "q05-kitchenaid-artisan",
+      "query": "KitchenAid Artisan batidora",
+      "country": "UY",
+      "intent": "ambiguous",
+      "expected": {
+        "model_codes": ["5KSM125", "5KSM150", "5KSM175", "5KSM185", "5KSM195"],
+        "notes": "Artisan stand mixers come in several capacities (4.8 L, 4.7 L, 5.6 L) and colours. Any 5KSM1xx is a match; colour variants are approximate unless the user named one. Stores listing KitchenAid in brands rank first."
+      },
+      "must_not": ["fabricated price", "a Classic or Professional series shown as exact", "colour invented"]
+    },
+    {
+      "id": "q06-delonghi-magnifica-s",
+      "query": "De'Longhi Magnifica S",
+      "country": "UY",
+      "intent": "exact_model",
+      "expected": {
+        "model_codes": ["ECAM22.110", "ECAM21.117", "ECAM22.112", "ECAM22.113", "ECAM23.120"],
+        "notes": "Magnifica S family is ECAM2x; Magnifica Evo (ECAM29x) and Magnifica Start (ECAM22.2x) are approximate. The apostrophe must be URL-encoded (%27) or dropped in the search query; try 'Magnifica S' and 'ECAM22' as the two attempts."
+      },
+      "must_not": ["fabricated price", "Magnifica Evo presented as exact", "more than two attempts per store"]
+    },
+    {
+      "id": "q07-sony-wh1000xm5",
+      "query": "auriculares Sony WH-1000XM5",
+      "country": "UY",
+      "intent": "exact_model",
+      "expected": {
+        "model_codes": ["WH-1000XM5", "WH1000XM5"],
+        "notes": "tv-audio category. WH-1000XM4 and XM6 are approximate. Technology stores quoting U$S must be reported in U$S."
+      },
+      "must_not": ["fabricated price", "XM4 presented as exact", "currency mislabeled"]
+    },
+    {
+      "id": "q08-ps5-slim",
+      "query": "PlayStation 5 Slim",
+      "country": "UY",
+      "intent": "variant",
+      "expected": {
+        "model_codes": ["CFI-2000", "CFI-2015", "CFI-2016", "CFI-2115", "CFI-2116"],
+        "notes": "Variants: Standard (disc) vs Digital Edition, and bundles. Answer must say which variant each store shows; a result without variant information is approximate. Gaming/general stores are the candidates."
+      },
+      "must_not": ["fabricated price", "Digital and disc versions conflated as the same price", "PS5 Pro presented as exact"]
+    },
+    {
+      "id": "q09-heladera-samsung-400",
+      "query": "heladera Samsung no frost 400 litros",
+      "country": "UY",
+      "intent": "budget_category",
+      "expected": {
+        "model_codes": [],
+        "notes": "large-appliances. Capacity shown by stores varies (380 L to 420 L should be reported with the stated litres and marked approximate when not exactly 400 L). Stores that are technology-only are not candidates."
+      },
+      "must_not": ["fabricated price", "capacity invented", "a failed store reported as 'does not sell it'"]
+    },
+    {
+      "id": "q10-espresso-hasta-20000",
+      "query": "cafetera espresso hasta 20.000 pesos",
+      "country": "UY",
+      "intent": "budget_category",
+      "expected": {
+        "model_codes": [],
+        "notes": "Budget filter in UYU. Only offers shown in $U at or below 20.000 qualify; offers in U$S must not be converted silently to judge the budget (either ask, or show them separately with the U$S price and say the budget was not applied). Say when a store had only pricier machines."
+      },
+      "must_not": ["fabricated price", "silent currency conversion", "an offer above 20.000 presented as within budget"]
+    },
+    {
+      "id": "q11-monitor-27-144hz",
+      "query": "monitor 27 pulgadas 144Hz",
+      "country": "UY",
+      "intent": "budget_category",
+      "expected": {
+        "model_codes": [],
+        "notes": "computing. Refresh rate must be read from the title or the product page; 165 Hz or 170 Hz monitors are approximate (exceed the spec), 75 Hz ones do not match. Report panel size as shown."
+      },
+      "must_not": ["fabricated price", "refresh rate invented when not shown", "a 24-inch monitor presented as exact"]
+    },
+    {
+      "id": "q12-colchon-queen",
+      "query": "colchón queen",
+      "country": "UY",
+      "intent": "out_of_coverage",
+      "expected": {
+        "model_codes": [],
+        "notes": "Category bedding exists in the taxonomy. At the time of writing no indexed store declares bedding; a general-marketplace store may be a candidate. Expected answer: either results from a 'general' store with titles as shown, or an honest 'no listed store declares this category' with the add-store link. Must not search unlisted stores."
+      },
+      "must_not": ["fabricated price", "searching stores not in the index", "claiming no store in Uruguay sells mattresses"]
+    },
+    {
+      "id": "q13-iphone-16-128",
+      "query": "iPhone 16 128GB",
+      "country": "UY",
+      "intent": "variant",
+      "expected": {
+        "model_codes": [],
+        "notes": "phones. Storage variant 128 GB is required for exact; 256 GB or iPhone 16e / 16 Plus / 16 Pro are approximate. Colours only when shown. U$S prices common."
+      },
+      "must_not": ["fabricated price", "16 Pro or 16e presented as exact", "storage invented"]
+    },
+    {
+      "id": "q14-licuadora-oster",
+      "query": "licuadora Oster",
+      "country": "UY",
+      "intent": "ambiguous",
+      "expected": {
+        "model_codes": [],
+        "notes": "small-appliances. Many models; list titles as shown with model numbers when present (BLSTxxx, Oster Pro, Classic). Stores listing Oster in brands rank first; absence of Oster in brands does not exclude a store."
+      },
+      "must_not": ["fabricated price", "excluding a store because Oster is not in its brands", "model number invented"]
+    },
+    {
+      "id": "q15-freidora-aire-5l",
+      "query": "freidora de aire 5 litros",
+      "country": "UY",
+      "intent": "budget_category",
+      "expected": {
+        "model_codes": [],
+        "notes": "small-appliances. Capacity as shown (4.5 L to 5.5 L approximate, 5 L exact). Mixed brands expected."
+      },
+      "must_not": ["fabricated price", "capacity invented", "a failed store reported as 'does not sell it'"]
+    },
+    {
+      "id": "q16-inexistente",
+      "query": "producto inexistente zqxjvkw",
+      "country": "UY",
+      "intent": "empty_result",
+      "expected": {
+        "model_codes": [],
+        "notes": "Every searched store should end in no_results (or a failure state when applicable). The answer must say nothing matched and must not propose unrelated products as if they matched. It may ask what the user meant. Coverage block still required."
+      },
+      "must_not": ["fabricated price", "unrelated products presented as results", "claiming the product does not exist anywhere"]
+    },
+    {
+      "id": "q17-tienda-no-listada",
+      "query": "¿cuánto sale la Nespresso Vertuo en Tienda Inglesa?",
+      "country": "UY",
+      "intent": "unavailable_store",
+      "expected": {
+        "model_codes": [],
+        "notes": "The named store is not in the index at the time of writing. Expected: state that the store is not listed and offer the add-store form; optionally show offers for the same product from listed stores, clearly labelled as other stores. Must not fetch the unlisted store's site as if it were indexed, and must not guess its price."
+      },
+      "must_not": ["fabricated price", "price attributed to the unlisted store without retrieval", "omitting the add-store link"]
+    },
+    {
+      "id": "q18-english-budget-usd",
+      "query": "espresso machine with milk frother under 500 dollars",
+      "country": "UY",
+      "intent": "currency",
+      "expected": {
+        "model_codes": [],
+        "notes": "English query, budget in USD, stores mostly price in UYU. Expected: answer in English; do not silently convert. Either ask for the destination/currency handling or show $U prices and state that the USD budget was not applied (or apply an explicitly labelled indicative rate with date). Country should be asked once if not inferable."
+      },
+      "must_not": ["fabricated price", "silent conversion to judge the budget", "answering in Spanish"]
+    },
+    {
+      "id": "q19-envio-argentina",
+      "query": "quiero comprar una cafetera Philips y que me la envíen a Argentina",
+      "country": "AR",
+      "intent": "destination",
+      "expected": {
+        "model_codes": [],
+        "notes": "Destination AR is not in the index's countries and no UY store confirms shipping to AR. Expected: say the index does not cover Argentina, that listed stores declare shipping to Uruguay only (or 'unknown/not confirmed' for AR), and offer the site and add-store links. Must not promise international shipping."
+      },
+      "must_not": ["fabricated price", "claiming a store ships to Argentina without a ships_to entry", "searching stores not in the index"]
+    },
+    {
+      "id": "q20-usd-vs-uyu",
+      "query": "notebook hasta 800 dólares o pesos, lo que sea más barato",
+      "country": "UY",
+      "intent": "currency",
+      "expected": {
+        "model_codes": [],
+        "notes": "Ambiguous currency: 800 USD vs 800 UYU is a 40x difference. Expected: treat as 800 USD (800 pesos cannot buy a notebook) but say so, or ask once. Show U$S offers at or under 800 as shown; $U offers listed with their price, with any conversion explicitly labelled with rate and date."
+      },
+      "must_not": ["fabricated price", "silent conversion", "treating $ and U$S as the same currency"]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+name: Bug report
+description: The shop skill gave a wrong, fabricated or misleading answer, failed on a store, or did not trigger.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If the problem is a **missing store or wrong store data**, that belongs to the data repository instead: use the [Add your store](https://github.com/ignaciolarranaga/open-commerce-index/issues/new?template=add-store.yml) form or open an issue in [open-commerce-index](https://github.com/ignaciolarranaga/open-commerce-index/issues).
+  - type: dropdown
+    id: client
+    attributes:
+      label: Client
+      options:
+        - Claude Code
+        - Claude.ai (web or desktop)
+        - Claude mobile app
+        - Codex CLI
+        - Codex (IDE or cloud)
+        - Cursor
+        - ChatGPT
+        - Other agent (say which below)
+    validations:
+      required: true
+  - type: input
+    id: client-version
+    attributes:
+      label: Client version
+      placeholder: "e.g. Claude Code 2.1.118"
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: From the Releases page or the installed plugin manifest.
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong
+      options:
+        - Fabricated or wrong price, title or model code
+        - A store that failed was reported as "does not sell it"
+        - Skill did not trigger on a shopping request
+        - Store retrieval failed although the manifest says it should work
+        - Wrong currency or conversion
+        - Missing or wrong coverage block
+        - Assistant followed instructions found in store text
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt as typed
+    validations:
+      required: true
+  - type: textarea
+    id: answer
+    attributes:
+      label: Assistant's raw answer
+      description: Paste the full answer, including the coverage block if any.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what the store page actually shows
+      description: Include the store URL you checked and the price/title you saw there.
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Index revision reported by the assistant
+      placeholder: "source_revision and generated_at, if shown"
