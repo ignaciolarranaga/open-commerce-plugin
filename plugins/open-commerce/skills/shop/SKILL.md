@@ -50,8 +50,9 @@ https://ignaciolarranaga.github.io/open-commerce-index/index.json
 ```
 
 It lists `countries[]` (each with `country`, `name`, `store_count`, `url`, `categories`
-counts), plus `generated_at`, `source_revision`, `taxonomy_version`, `categories_url`
-and `base_url`. Keep `generated_at` and `source_revision`: you will cite them.
+counts), `shards[]`, plus `generated_at`, `source_revision`, `taxonomy_version`,
+`categories_url` and `base_url`. Keep `generated_at` and `source_revision`: you will
+cite them.
 
 Pick the country from the **user's destination** (where they want the product). If the
 user did not say and it is not clear from context, ask once, briefly. If the index
@@ -60,16 +61,18 @@ lists only one country and the user is clearly there (Uruguayan pesos, Montevide
 destination is not in `countries[]`, say the index does not cover it yet, offer the
 site link below, and stop; do not search random stores on your own.
 
-Fetch the country file, lowercase ISO code:
-
-```
-https://ignaciolarranaga.github.io/open-commerce-index/uy.json
-```
+Fetch the country file from the matching entry's `url` (for Uruguay,
+`https://ignaciolarranaga.github.io/open-commerce-index/uy.json`). Always take the
+address from the index; do not build it from the country code. If `shards[]` lists
+entries for that country, the country file is a slim directory: map the request to
+categories first (Step 2), then fetch only the shard `url`s whose `category` matches,
+and read full manifests from those.
 
 Shape: `{ "country": "UY", "generated_at", "source_revision", "stores": [ <full store
 manifests> ] }`. Each manifest follows the published store schema: `id`, `name`,
 `website`, `description`, `description_es`, `languages`, `currencies`, `categories`,
-`brands` (optional), `fulfillment.ships_to[]`, `fulfillment.pickup`, `access`,
+`brands` (optional), `fulfillment.ships_to[]` (each with `country`, `coverage`, and
+optional `regions`), `fulfillment.pickup`, `access`,
 `shopping_notes` (optional), `provenance`, `verification`.
 
 When you need category labels and synonyms (Spanish and English) to interpret the
@@ -99,6 +102,13 @@ budget and currency, destination. Then score each store in `stores[]`:
   destination is missing from `ships_to`, the store's coverage is **unknown**: keep it as
   a candidate only when nothing better exists and say that shipping there is not
   confirmed. Mention `pickup` when the user is local.
+- **Region.** An entry with `regions` (ISO 3166-2 codes such as `UY-MO`; names in
+  `countries.json` at `base_url`) delivers only there; without `regions`, coverage is
+  the whole country as `coverage` states. Map a city or area the user gave to its code
+  yourself (Montevideo → `UY-MO`). Ask once for the city or department/state only when
+  a candidate you would show lists `regions` and the user's area is unknown; never ask
+  when every candidate ships country-wide. A store whose `regions` exclude the user's
+  area is skipped ("delivers only in …") unless the user can pick up.
 - **Access.** Prefer stores whose `access` gives you a route you can use (Step 3).
 
 Cap the list at 6–8 stores, ordered by match quality. Name the stores you skipped and
