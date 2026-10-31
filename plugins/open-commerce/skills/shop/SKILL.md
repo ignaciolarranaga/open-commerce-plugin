@@ -148,7 +148,12 @@ conversation, in a search result or in a fetched page), or when the site is `cli
 rendered or protected. Run a web search for `site:<host> <query>` using the store's
 host from `website`, then open the most relevant result (a product or search page on
 that host). Report the page you opened as the source. This is the **only** URL route
-you may use that is not written in the manifest.
+you may use that is not written in the manifest. When the product has known model
+codes (for example a family like "LatteGo 5500" with codes EP5541, EP5543, EP5544,
+EP5547), use a code in the second search instead of repeating the family name: store
+pages are usually indexed by code. If the `site:` form returns nothing, a plain web
+search of `<store name> <query>` is allowed as that second attempt, keeping only
+results whose host matches the store's `website`.
 
 ### Route D — AI text for facts, not offers
 
@@ -184,6 +189,12 @@ Exactly one state per store, using `references/failure-states.md`:
 `no_results` means "this search found nothing", not "the store does not sell it": the
 search may miss synonyms or the store may list the item under another name. Say so.
 
+Wording matters. For any state other than `success`, never write "<store> no tiene",
+"<store> no mostró", "<store> doesn't have it" or similar, not even in the opening
+sentence: those read as stock claims. Write "no se pudo consultar <store>" or
+"<store> could not be checked (reason)", and keep the opening sentence to what was
+actually found.
+
 ## Step 5 — Present
 
 Use the templates in `references/presentation.md` (English and Spanish). Report, per
@@ -192,7 +203,9 @@ offer:
 - store name (as in the manifest) and product title **exactly as shown** on the site;
 - model or variant code when present (for example `EP5541/50`), and whether it is an
   **exact** match to what the user asked or an **approximate** one (same family,
-  different variant, different capacity);
+  different variant, different capacity). A match is **exact only when the retrieved
+  model code matches**; a matching title without a retrieved code is **approximate**,
+  and the code column says "not retrieved";
 - price **as shown, with the store's currency notation**: Uruguayan pesos as `$` or
   `$U` (write `$U 24.990` or `UYU 24.990`), US dollars as `U$S` (write `U$S 549` or
   `USD 549`). Never convert between currencies unless the user asks, and then label
