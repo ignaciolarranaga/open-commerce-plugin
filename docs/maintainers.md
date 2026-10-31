@@ -141,18 +141,26 @@ written as PASS and FAIL conditions. Run it from the plugin root with the networ
 skill needs granted explicitly (requires Claude Code 2.1.269 or later):
 
 ```sh
-cd plugins/open-commerce
-claude plugin eval . --trust-plugin --no-publish \
-  --allow-tools WebSearch "WebFetch(domain:ignaciolarranaga.github.io)" \
-    "WebFetch(domain:loi.com.uy)" "WebFetch(domain:www.zonatecno.com.uy)" "WebFetch(domain:www.vitaleco.com.uy)" \
-  --max-cost-usd 15
+npm run evals                                  # 3 runs per case, with the no-plugin baseline
+EVAL_RUNS=1 EVAL_ABLATION=none npm run evals   # cheaper single pass
 ```
 
-Add a `WebFetch(domain:…)` grant for every store you expect the skill to reach. Results land in
+`scripts/run-evals.sh` holds the models, threshold, cost cap and network grants shared with CI.
+Add a `WebFetch(domain:…)` grant there for every store you expect the skill to reach. Results land in
 `plugins/open-commerce/evals/results/` (gitignored). The manual query set in `evals/queries.json`
 at the repository root is the longer list for hands-on runs in other clients; record those with
 `evals/run-log.template.md`.
 
-## CI gate
+## Eval gate
 
-`.github/workflows/evals.yml` runs the automated suite on pull requests touching the skill, the evals or the plugin manifest, with `--threshold 0.8`, pinned models (`claude-sonnet-5` under test, `claude-haiku-4-5` as judge) and a USD 20 cost cap. It requires the `ANTHROPIC_API_KEY` repository secret. Make `evals` a required check in the `main` ruleset after its first green run. A run can also be started by hand from the Actions tab with a custom run count or `--ablation none`.
+Until the `ANTHROPIC_API_KEY` repository secret is set, the gate runs in Claude Code: the
+project hook in `.claude/settings.json` calls `scripts/eval-gate.sh` before any `git push`
+Claude runs in this repository. When the commits not yet on the remote change the skill, its
+evals, the plugin manifest or `scripts/run-evals.sh`, it runs the suite (one run, no
+baseline; override with `EVAL_RUNS` and `EVAL_ABLATION`) and blocks the push when a case
+scores below 0.8. The log lands in `plugins/open-commerce/evals/results/eval-gate.log`.
+Pushes from your own terminal are not gated; run `npm run evals` first. Mention the result in
+the PR description.
+
+`.github/workflows/evals.yml` runs the same script. Its `pull_request` trigger is commented
+out until the secret exists; re-enable it then. When enabled it runs the automated suite on pull requests touching the skill, the evals or the plugin manifest, with `--threshold 0.8`, pinned models (`claude-sonnet-5` under test, `claude-haiku-4-5` as judge) and a USD 20 cost cap. It requires the `ANTHROPIC_API_KEY` repository secret. Make `evals` a required check in the `main` ruleset after its first green run. A run can also be started by hand from the Actions tab with a custom run count or `--ablation none`.

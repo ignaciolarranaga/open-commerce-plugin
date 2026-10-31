@@ -1,6 +1,6 @@
 {
   "name": "open-commerce",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shopping skill for assistants: reads the OpenCommerceIndex directory of online stores, retrieves current offers from each store's own website following its declared access methods, and reports prices, availability and sources with honest coverage notes.",
   "skills": "./skills/",
   "interface": {

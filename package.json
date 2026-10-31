@@ -9,6 +9,7 @@
     "validate": "node scripts/validate.js",
     "pack": "node scripts/pack.js",
     "pack:plugin": "node scripts/pack.js --plugin",
-    "pack:skill": "node scripts/pack.js --skill"
+    "pack:skill": "node scripts/pack.js --skill",
+    "evals": "sh scripts/run-evals.sh"
   }
 }
