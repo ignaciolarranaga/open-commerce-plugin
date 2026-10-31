@@ -1,7 +1,7 @@
 {
   "name": "open-commerce",
   "displayName": "OpenCommerceIndex Shopping",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shopping skill for assistants: reads the OpenCommerceIndex directory of online stores, retrieves current offers from each store's own website following its declared access methods, and reports prices, availability and sources with honest coverage notes.",
   "author": {
     "name": "Ignacio Larrañaga",
@@ -18,7 +18,7 @@
     "uruguay",
     "open-commerce-index"
   ],
-  "icon": "./icon.png",
+  "icon": "./assets/icon.png",
   "documentationUrl": "https://ignaciolarranaga.github.io/open-commerce-index/en/connect/",
   "supportUrl": "https://github.com/ignaciolarranaga/open-commerce-plugin/issues",
   "privacyPolicyUrl": "https://ignaciolarranaga.github.io/open-commerce-index/en/privacy/",

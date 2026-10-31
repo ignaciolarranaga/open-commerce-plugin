@@ -110,10 +110,12 @@ npm run pack:chatgpt      # or: node scripts/pack-chatgpt.js
 unzip -l dist/open-commerce-<version>.zip
 ```
 
-The zip contains exactly `.claude-plugin/plugin.json` (with a non-empty description) and
-`skills/<name>/SKILL.md` plus each skill's `references/`. No hooks, no `userConfig`, no
-README, no marketplace files. The same zip is what Claude.ai users download to upload
-the `skills/shop` folder manually.
+The zip contains `.claude-plugin/plugin.json` (with a non-empty description),
+`.codex-plugin/plugin.json` (with the OpenAI listing block `interface`), a generated root
+`plugin.json` that mirrors that block under `extensions."com.openai"`, the images under
+`assets/`, and `skills/<name>/SKILL.md` plus each skill's `references/`. No hooks, no
+`userConfig`, no README, no marketplace files. `dist/open-commerce-skill-shop.zip` is the
+`skills/shop` folder alone, which Claude.ai users upload manually.
 
 Submitting the package to OpenAI is a separate, manual step that this repository does
 not automate; until it happens, `docs/compatibility.md` keeps the ChatGPT row as

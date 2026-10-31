@@ -1,6 +1,25 @@
 {
   "name": "open-commerce",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shopping skill for assistants: reads the OpenCommerceIndex directory of online stores, retrieves current offers from each store's own website following its declared access methods, and reports prices, availability and sources with honest coverage notes.",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OpenCommerceIndex Shopping",
+    "shortDescription": "Real stores, current prices",
+    "longDescription": "Finds a product across the online stores listed in OpenCommerceIndex, an open directory of merchants published on GitHub. For each store it follows the access methods the directory declares (a JSON search endpoint, a search page or web search restricted to the store's site), reads the current price, availability and product title from the store's own pages, and reports them with the source link and the retrieval time. It never invents prices or stock, says which stores it could not check, and ends every answer with the coverage used. First covered market: Uruguay. It does not add to cart, log in, check out or quote shipping unless the store page states it.",
+    "developerName": "Ignacio Larrañaga",
+    "category": "Shopping",
+    "capabilities": ["Read"],
+    "websiteURL": "https://ignaciolarranaga.github.io/open-commerce-index/",
+    "supportURL": "https://github.com/ignaciolarranaga/open-commerce-plugin/issues",
+    "privacyPolicyURL": "https://ignaciolarranaga.github.io/open-commerce-index/en/privacy/",
+    "termsOfServiceURL": "https://ignaciolarranaga.github.io/open-commerce-index/en/terms/",
+    "defaultPrompt": [
+      "Where can I buy a Philips LatteGo 5500 in Uruguay and at what price?",
+      "Compare prices for a 15-inch laptop in stores that ship within Uruguay."
+    ],
+    "brandColor": "#0F6E56",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
 }

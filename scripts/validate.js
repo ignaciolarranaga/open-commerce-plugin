@@ -8,6 +8,8 @@
 //   3. No merchant data is bundled under plugins/ (no store manifests, no "stores" arrays).
 //   4. The three marketplace catalogs reference existing plugin paths and the plugin name.
 //   5. The ChatGPT packaging constraints hold: non-empty description, no hooks, no userConfig.
+//   6. The OpenAI listing block (codex manifest `interface`) is complete, within the portal's
+//      limits, and every referenced image exists.
 
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -72,6 +74,47 @@ if (loaded.length === 3) {
   }
   if (manifests.codex && manifests.codex.skills !== './skills/') {
     fail(`codex manifest "skills" must be "./skills/", got ${JSON.stringify(manifests.codex.skills)}`);
+  }
+  if (manifests.claude && manifests.claude.extensions) {
+    fail('claude manifest must not carry "extensions"; the OpenAI block lives in the codex manifest (strict Claude validation rejects unknown keys)');
+  }
+}
+
+// 1b. OpenAI listing block ---------------------------------------------------------
+// Limits from https://developers.openai.com/plugins/deploy/submission
+if (manifests.codex) {
+  const iface = manifests.codex.interface;
+  if (!iface || typeof iface !== 'object') {
+    fail('codex manifest has no "interface" block; the OpenAI portal fills the listing from it');
+  } else {
+    const limits = { displayName: 30, shortDescription: 30, longDescription: 4000, developerName: 80 };
+    for (const [key, max] of Object.entries(limits)) {
+      const v = iface[key];
+      if (typeof v !== 'string' || !v.trim()) fail(`codex manifest interface.${key} is required`);
+      else if (v.length > max) fail(`codex manifest interface.${key} is ${v.length} characters; the limit is ${max}`);
+      else if (max === 30 && /\r|\n/.test(v)) fail(`codex manifest interface.${key} must be a single line`);
+    }
+    if (typeof iface.category !== 'string' || !iface.category.trim()) fail('codex manifest interface.category is required');
+    for (const key of ['websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL']) {
+      const v = iface[key];
+      if (typeof v !== 'string' || !/^https:\/\//.test(v)) fail(`codex manifest interface.${key} must be an https URL`);
+      else if (v.length > 1024) fail(`codex manifest interface.${key} exceeds 1024 characters`);
+    }
+    if (manifests.claude && iface.displayName !== manifests.claude.displayName) {
+      fail(`interface.displayName "${iface.displayName}" differs from the claude manifest displayName "${manifests.claude.displayName}"`);
+    }
+    const images = [['logo', iface.logo], ['composerIcon', iface.composerIcon], ...((iface.screenshots || []).map((s, i) => [`screenshots[${i}]`, s]))];
+    if (manifests.claude && manifests.claude.icon) images.push(['claude icon', manifests.claude.icon]);
+    for (const [label, ref] of images) {
+      if (typeof ref !== 'string' || !ref.startsWith('./')) fail(`${label} must be a relative path starting with ./ (got ${JSON.stringify(ref)})`);
+      else if (!existsSync(path.join(PLUGIN_DIR, ref))) fail(`${label} points at a missing file: ${ref}`);
+      else if (!/\.(png|jpe?g|webp|svg)$/i.test(ref)) fail(`${label} must be PNG, JPEG, WebP or SVG: ${ref}`);
+      else if (statSync(path.join(PLUGIN_DIR, ref)).size > 5 * 1024 * 1024) fail(`${label} is larger than 5 MiB: ${ref}`);
+    }
+    if (Array.isArray(iface.capabilities) && (iface.capabilities.length > 20 || iface.capabilities.some((c) => String(c).length > 120))) {
+      fail('interface.capabilities allows at most 20 items of 120 characters');
+    }
+    if (iface.brandColor && !/^#[0-9A-Fa-f]{6}$/.test(iface.brandColor)) fail(`interface.brandColor must be a hex colour, got ${iface.brandColor}`);
   }
 }
 
@@ -166,4 +209,4 @@ if (problems.length) {
   process.exit(1);
 }
 const version = manifests.claude ? manifests.claude.version : '?';
-console.log(`validate: ok (open-commerce ${version}; manifests in sync, skills well-formed, no merchant data, marketplaces resolve)`);
+console.log(`validate: ok (open-commerce ${version}; manifests in sync, OpenAI listing block complete, skills well-formed, no merchant data, marketplaces resolve)`);

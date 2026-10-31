@@ -6,12 +6,16 @@
 //
 // Contents, relative to the zip root:
 //   .claude-plugin/plugin.json   (must carry a non-empty description)
+//   .codex-plugin/plugin.json    (carries the OpenAI listing block `interface`)
+//   plugin.json                  (generated: Agent Plugins manifest with extensions."com.openai".interface,
+//                                 so the OpenAI portal fills the listing from the archive)
+//   assets/<icon files>          (every image the manifests reference)
 //   skills/<name>/SKILL.md       (+ references/ under each skill)
 //
 // Nothing else: no hooks, no userConfig, no README, no marketplace files.
 // Uses the `zip` CLI (present on macOS and ubuntu runners). Node 22, no dependencies.
 
-import { readFileSync, existsSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import os from 'node:os';
@@ -35,6 +39,20 @@ if (!manifest.description || !String(manifest.description).trim()) die('plugin m
 if ('hooks' in manifest) die('plugin manifest declares hooks; the submission must be skills-only');
 if ('userConfig' in manifest) die('plugin manifest declares userConfig; the submission must be skills-only');
 
+const codexFile = path.join(PLUGIN_DIR, '.codex-plugin', 'plugin.json');
+if (!existsSync(codexFile)) die(`missing ${path.relative(ROOT, codexFile)}`);
+const codex = JSON.parse(readFileSync(codexFile, 'utf8'));
+const iface = codex.interface;
+if (!iface || typeof iface !== 'object') die('codex manifest has no "interface" block; the OpenAI listing is filled from it');
+for (const key of ['displayName', 'shortDescription', 'longDescription', 'developerName', 'category', 'websiteURL', 'supportURL', 'privacyPolicyURL', 'termsOfServiceURL', 'logo', 'composerIcon']) {
+  if (!iface[key]) die(`codex manifest interface.${key} is required for the OpenAI listing`);
+}
+const imageRefs = [iface.logo, iface.composerIcon, ...(iface.screenshots || []), manifest.icon].filter(Boolean);
+for (const ref of imageRefs) {
+  if (!ref.startsWith('./')) die(`image path ${ref} must be relative and start with ./`);
+  if (!existsSync(path.join(PLUGIN_DIR, ref))) die(`referenced image ${ref} is missing`);
+}
+
 const skillsDir = path.join(PLUGIN_DIR, 'skills');
 if (!existsSync(skillsDir)) die('missing skills/ directory');
 const skills = readdirSync(skillsDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
@@ -52,11 +70,29 @@ const staging = path.join(os.tmpdir(), `open-commerce-pack-${process.pid}`);
 rmSync(staging, { recursive: true, force: true });
 mkdirSync(path.join(staging, '.claude-plugin'), { recursive: true });
 cpSync(manifestFile, path.join(staging, '.claude-plugin', 'plugin.json'));
-if (manifest.icon) {
-  const iconFile = path.join(PLUGIN_DIR, manifest.icon);
-  if (!existsSync(iconFile)) die(`plugin manifest icon ${manifest.icon} is missing`);
-  cpSync(iconFile, path.join(staging, manifest.icon));
+mkdirSync(path.join(staging, '.codex-plugin'), { recursive: true });
+cpSync(codexFile, path.join(staging, '.codex-plugin', 'plugin.json'));
+for (const ref of new Set(imageRefs)) {
+  mkdirSync(path.dirname(path.join(staging, ref)), { recursive: true });
+  cpSync(path.join(PLUGIN_DIR, ref), path.join(staging, ref));
 }
+// Portable root manifest (Agent Plugins format). OpenAI reads its listing from
+// extensions."com.openai".interface when present; the Claude manifest stays free of
+// that key because `claude plugin validate --strict` rejects unknown fields.
+const portable = {
+  $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
+  name: manifest.name,
+  version: manifest.version,
+  description: manifest.description,
+  author: manifest.author,
+  homepage: manifest.homepage,
+  repository: manifest.repository,
+  license: manifest.license,
+  keywords: manifest.keywords,
+  skills: './skills/',
+  extensions: { 'com.openai': { interface: iface } },
+};
+writeFileSync(path.join(staging, 'plugin.json'), `${JSON.stringify(portable, null, 2)}\n`);
 cpSync(skillsDir, path.join(staging, 'skills'), {
   recursive: true,
   filter: (src) => {
