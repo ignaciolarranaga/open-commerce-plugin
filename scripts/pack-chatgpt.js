@@ -52,6 +52,11 @@ const staging = path.join(os.tmpdir(), `open-commerce-pack-${process.pid}`);
 rmSync(staging, { recursive: true, force: true });
 mkdirSync(path.join(staging, '.claude-plugin'), { recursive: true });
 cpSync(manifestFile, path.join(staging, '.claude-plugin', 'plugin.json'));
+if (manifest.icon) {
+  const iconFile = path.join(PLUGIN_DIR, manifest.icon);
+  if (!existsSync(iconFile)) die(`plugin manifest icon ${manifest.icon} is missing`);
+  cpSync(iconFile, path.join(staging, manifest.icon));
+}
 cpSync(skillsDir, path.join(staging, 'skills'), {
   recursive: true,
   filter: (src) => {
@@ -65,7 +70,7 @@ const zipName = `${manifest.name}-${manifest.version}.zip`;
 const zipPath = path.join(DIST, zipName);
 rmSync(zipPath, { force: true });
 
-const result = spawnSync('zip', ['-r', '-X', '-q', zipPath, '.claude-plugin', 'skills'], { cwd: staging, encoding: 'utf8' });
+const result = spawnSync('zip', ['-r', '-X', '-q', zipPath, '.'], { cwd: staging, encoding: 'utf8' });
 rmSync(staging, { recursive: true, force: true });
 if (result.error || result.status !== 0) die(`zip failed: ${result.error ? result.error.message : result.stderr}`);
 
