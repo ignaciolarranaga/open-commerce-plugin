@@ -122,6 +122,16 @@ claude plugin eval . --trust-plugin --no-publish \
 
 Add a `WebFetch(domain:…)` grant for every store the skill may reach; stores without a grant show up as failed retrievals, which the skill must report honestly. Each case runs three times with the plugin and three times without it, so the report shows what the plugin adds. Useful variations: `--case lattego-uruguay` for one case, `--ablation none` to skip the baseline while iterating, `--judge-model sonnet` if the rubric verdicts look unstable. Results and the HTML report land in `plugins/open-commerce/evals/results/` (gitignored).
 
+### Gate on evals in CI
+
+`.github/workflows/evals.yml` runs the suite on pull requests that touch the skill, the evals or the plugin manifest, with `--threshold 0.8` (a case passes when its mean score over three runs is at least 0.8) and a USD 20 cost cap. It needs the `ANTHROPIC_API_KEY` repository secret:
+
+```sh
+gh secret set ANTHROPIC_API_KEY --repo ignaciolarranaga/open-commerce-plugin
+```
+
+Once the first run is green, add `evals` to the required status checks of the `main` ruleset so skill changes cannot merge below the threshold. The summary of every run appears on the workflow page and the HTML report is attached as an artifact.
+
 ## Repository layout
 
 ```

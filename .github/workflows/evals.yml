@@ -1,0 +1,93 @@
+# Runs the plugin eval suite and fails when any case scores below the threshold.
+# Needs the ANTHROPIC_API_KEY repository secret; eval runs call the model and cost money,
+# so this runs only when skill or eval files change, or on demand. Pin both models so a
+# model rollout is not mistaken for a skill regression. The HTML report is uploaded as
+# an artifact for every run.
+name: Evals
+
+on:
+  pull_request:
+    paths:
+      - "plugins/open-commerce/skills/**"
+      - "plugins/open-commerce/evals/**"
+      - "plugins/open-commerce/.claude-plugin/**"
+      - ".github/workflows/evals.yml"
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Runs per case per arm"
+        required: false
+        default: "3"
+        type: string
+      ablation:
+        description: "with-without (adds the no-plugin baseline) or none"
+        required: false
+        default: "with-without"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require the API key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY secret is not set; evals cannot run."
+            exit 1
+          fi
+      - name: Install Claude Code
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install sandbox dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq bubblewrap socat
+      - name: Run the suite
+        working-directory: plugins/open-commerce
+        run: |
+          claude --version
+          claude plugin eval . \
+            --trust-plugin \
+            --no-publish \
+            --json "$GITHUB_WORKSPACE/eval-results.json" \
+            --output-dir "$GITHUB_WORKSPACE/eval-report" \
+            --threshold 0.8 \
+            --runs "${{ inputs.runs || '3' }}" \
+            --ablation "${{ inputs.ablation || 'with-without' }}" \
+            --model claude-sonnet-5 \
+            --judge-model claude-haiku-4-5 \
+            --max-cost-usd 20 \
+            --allow-tools WebSearch \
+              "WebFetch(domain:ignaciolarranaga.github.io)" \
+              "WebFetch(domain:loi.com.uy)" \
+              "WebFetch(domain:www.zonatecno.com.uy)" \
+              "WebFetch(domain:www.vitaleco.com.uy)"
+      - name: Summarize
+        if: always()
+        run: |
+          if [ -f eval-results.json ]; then
+            node -e '
+              const r = require("./eval-results.json");
+              const lines = [`## Eval results`, ``, `Suite score ${r.aggregates.overallScore.toFixed(2)}, cases passed ${r.aggregates.casesPassed}/${r.aggregates.casesTotal}${r.aggregates.meanDelta != null ? `, mean Δ vs no plugin ${r.aggregates.meanDelta.toFixed(2)}` : ""}, cost USD ${r.costUsd.toFixed(2)}${r.partial ? ` (partial: ${r.partialReason})` : ""}`, ``, `| case | with | Δ |`, `|---|---|---|`];
+              for (const c of r.cases) lines.push(`| ${c.name} | ${c.aggregates.score.toFixed(2)} | ${c.aggregates.delta == null ? "" : c.aggregates.delta.toFixed(2)} |`);
+              require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+            '
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report
+          path: |
+            eval-results.json
+            eval-report/
+          if-no-files-found: ignore
