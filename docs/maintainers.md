@@ -126,3 +126,25 @@ The skill reads the live index and the schema version is recorded in
 `schema_version` or changes the country-file shape, update `SKILL.md` Step 1, the
 references, and the plugin README in one PR, bump the minor version, and re-run at
 least one client eval.
+
+## Automated eval suite
+
+`plugins/open-commerce/evals/` holds a `claude plugin eval` suite (five cases: the LatteGo
+primary query, an unrelated request that must not trigger the skill, a destination outside
+coverage, a nonsense product, and an English laptop query). Each case has a `tool_used`
+grader for the skill, a cheap deterministic grader where possible, and an `llm` rubric
+written as PASS and FAIL conditions. Run it from the plugin root with the network tools the
+skill needs granted explicitly (requires Claude Code 2.1.269 or later):
+
+```sh
+cd plugins/open-commerce
+claude plugin eval . --trust-plugin --no-publish \
+  --allow-tools WebSearch "WebFetch(domain:ignaciolarranaga.github.io)" \
+    "WebFetch(domain:loi.com.uy)" "WebFetch(domain:www.zonatecno.com.uy)" "WebFetch(domain:www.vitaleco.com.uy)" \
+  --max-cost-usd 15
+```
+
+Add a `WebFetch(domain:…)` grant for every store you expect the skill to reach. Results land in
+`plugins/open-commerce/evals/results/` (gitignored). The manual query set in `evals/queries.json`
+at the repository root is the longer list for hands-on runs in other clients; record those with
+`evals/run-log.template.md`.

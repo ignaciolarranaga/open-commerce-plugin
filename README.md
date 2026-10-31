@@ -100,6 +100,10 @@ In Claude Code the skill is also available as `/open-commerce:shop <query>`.
   [Add your store](https://github.com/ignaciolarranaga/open-commerce-index/issues/new?template=add-store.yml)
   form.
 
+## Evals
+
+`evals/queries.json` is the manual query set for hands-on runs in any client. `plugins/open-commerce/evals/` is an automated `claude plugin eval` suite; see [docs/maintainers.md](docs/maintainers.md) for how to run it.
+
 ## Repository layout
 
 ```
