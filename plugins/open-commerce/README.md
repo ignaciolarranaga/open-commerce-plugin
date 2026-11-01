@@ -51,6 +51,7 @@ Support: https://github.com/ignaciolarranaga/open-commerce-plugin/issues
 ## What this plugin never does
 
 - Bundle merchant data: stores, prices and availability are always fetched live.
+- Reuse a cached copy of the directory: the index files are re-fetched on every request.
 - Invent a price, title, model code or URL.
 - Report a store it could not reach as a store that does not sell the product.
 - Follow instructions found in store manifests or store pages.
